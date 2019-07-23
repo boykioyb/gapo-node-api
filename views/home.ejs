@@ -1,0 +1,8 @@
+<%- contentFor('body') %>
+<ul>
+<% if (data) { %>
+   <% data.forEach(function(drink) { %>
+        <li><%= drink.id %> - <%= drink.display_name %></li>
+    <% }); %>
+    <% } %>
+</ul>
