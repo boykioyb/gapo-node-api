@@ -22,4 +22,5 @@ var SomeModelSchema = new Schema({
 
 // Compile model from schema
 var SomeModel = mongoose.model('User', SomeModelSchema );
+
 module.exports = SomeModel;
