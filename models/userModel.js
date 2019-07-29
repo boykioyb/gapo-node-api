@@ -24,3 +24,11 @@ var SomeModelSchema = new Schema({
 var SomeModel = mongoose.model('User', SomeModelSchema );
 
 module.exports = SomeModel;
+
+module.exports.get = function (callback,page, limit) {
+    SomeModel.find(callback).skip(page*limit).limit(limit);
+}
+
+module.exports.count = function (callback) {
+    SomeModel.countDocuments(callback);
+}

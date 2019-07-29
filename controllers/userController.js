@@ -1,100 +1,30 @@
-var rp = require('request-promise');
-let queryString = require('query-string');
 const axios = require('axios');
 var userModel = require('../models/userModel');
 
-let base = "https://api.gapo.vn/";
-let path = "main/v1.0/user/view?";
 
-async function insert(options) {
-    response = await rp(options);
-    return response;
+exports.userAll = (req,res,next) => {
+    // let find = userModel.find({'status' : 1}).limit( 10 ).exec();
+    // res.send(find); 
+    let page = req.query.page ? parseInt(req.query.page) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    console.log(page);
+    console.log(limit);
 
-}
-function getUser(i, url) {
-    const response = axios.get(url);
-    return response;
-}
-async function parseData() {
-    for (i = 0; i <= 10; i++) {
-        query = {
-            id: i,
-        };
-        url = base + path + queryString.stringify(query);
-        var options = {
-            url: base + path + queryString.stringify(query),
-            method: 'GET',
-            resolveWithFullResponse: true,
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6Ijg1MDIifQ.eyJpc3MiOiJhcGkuZ2Fwby52biIsImF1ZCI6ImFwaS5nYXBvLnZuIiwianRpIjoiODUwMiIsImlhdCI6MTU2Mzg0NDc1MSwibmJmIjoxNTYzODQ0NzUxLCJleHAiOjE1NjY0MzY3NTEsInVpZCI6ODUwMiwicGVybWlzc2lvbiI6bnVsbH0.sNW7NWsKgnMOl7xjhsqM7Yey9fGBpeFyetmQKVFNCOE',
-            }
-
-        };
-        console.log("i : " + i);
-        await getUser(i, url).then(response => {
-            console.log("i trong then : " + i);
-            console.log("id : " + response.data.id);
-            data = response.data;
-            user = new userModel({
-                id_user: data.id,
-                id_chat: data.id_chat,
-                username: data.username,
-                display_name: data.display_name,
-                avatar: data.avatar,
-                cover: data.cover,
-                gender: data.gender,
-                birthday: data.birthday,
-                location: data.location,
-                counts: data.counts,
-                status: data.status,
-                create_time: data.create_time,
-                relation: data.relation,
-                status_verify: data.status_verify,
-                data_source: data.data_source
+    userModel.get(function (err, contacts) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
             });
-            user.save();
-        }).catch(err => console.log);
-        // axios.get(url).then(function (response) {
-        //     // handle success
-        //     console.log(response.data.id);
-        //   })
-        //   .catch(function (error) {
-        //     // handle error
-        //     // console.log(error);
-        //   })
-        //   .finally(function () {
-        // always executed
-        //   });
-        // data = htmlString.body;
-        // if (data) {
-        //     console.log(base + path + queryString.stringify(query));
-        //     console.log(data.id);
+        }
 
-        //     user = new userModel({
-        //         id_user: data.id,
-        //         id_chat: data.id_chat,
-        //         username: data.username,
-        //         display_name: data.display_name,
-        //         avatar: data.avatar,
-        //         cover: data.cover,
-        //         gender: data.gender,
-        //         birthday: data.birthday,
-        //         location: data.location,
-        //         counts: data.counts,
-        //         status: data.status,
-        //         create_time: data.create_time,
-        //         relation: data.relation,
-        //         status_verify: data.status_verify,
-        //         data_source: data.data_source
-        //     });
-        //     user.save();
-        // }
-
-    }
+        let counts = userModel.count();
+        console.log(counts);
+        res.json({
+            status: "success",
+            message: "Contacts retrieved successfully",
+            total : counts,
+            data: contacts
+        });
+    },page,limit);
 }
-exports.user = (req, res, next) => {
-    parseData();
-}
-
