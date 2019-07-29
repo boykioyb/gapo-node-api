@@ -1,7 +1,22 @@
+require("request/package.json");
 var rp = require('request-promise');
 let queryString = require('query-string');
 const axios = require('axios');
-var userModel = require('../models/userModel');
+
+const mongoose = require('mongoose');
+let dev_db_url = 'mongodb://127.0.0.1/test';
+let mongoDB = process.env.MONGODB_URI || dev_db_url;
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+
+
+var userModel = require('./models/userModel');
 
 let base = "https://api.gapo.vn/";
 let path = "main/v1.0/user/view?";
@@ -11,16 +26,16 @@ async function insert(options) {
     return response;
 
 }
-function getUser(i, url) {
-    const response = axios.get(url);
-    return response;
-}
-async function parseData() {
+function getUser(i,url) {
+      const response = axios.get(url);
+      return response;
+  }
+(async function parseData() {
     for (i = 0; i <= 10; i++) {
         query = {
             id: i,
         };
-        url = base + path + queryString.stringify(query);
+         url  = base + path + queryString.stringify(query);
         var options = {
             url: base + path + queryString.stringify(query),
             method: 'GET',
@@ -33,11 +48,12 @@ async function parseData() {
 
         };
         console.log("i : " + i);
-        await getUser(i, url).then(response => {
+        await getUser(i,url).then(response => {
             console.log("i trong then : " + i);
-            console.log("id : " + response.data.id);
+           
             data = response.data;
-            user = new userModel({
+            
+            params = {
                 id_user: data.id,
                 id_chat: data.id_chat,
                 username: data.username,
@@ -53,48 +69,24 @@ async function parseData() {
                 relation: data.relation,
                 status_verify: data.status_verify,
                 data_source: data.data_source
-            });
-            user.save();
-        }).catch(err => console.log);
-        // axios.get(url).then(function (response) {
-        //     // handle success
-        //     console.log(response.data.id);
-        //   })
-        //   .catch(function (error) {
-        //     // handle error
-        //     // console.log(error);
-        //   })
-        //   .finally(function () {
-        // always executed
-        //   });
-        // data = htmlString.body;
-        // if (data) {
-        //     console.log(base + path + queryString.stringify(query));
-        //     console.log(data.id);
+            };
 
-        //     user = new userModel({
-        //         id_user: data.id,
-        //         id_chat: data.id_chat,
-        //         username: data.username,
-        //         display_name: data.display_name,
-        //         avatar: data.avatar,
-        //         cover: data.cover,
-        //         gender: data.gender,
-        //         birthday: data.birthday,
-        //         location: data.location,
-        //         counts: data.counts,
-        //         status: data.status,
-        //         create_time: data.create_time,
-        //         relation: data.relation,
-        //         status_verify: data.status_verify,
-        //         data_source: data.data_source
-        //     });
-        //     user.save();
-        // }
+            userModel.findOneAndUpdate({
+                id_user: data.id
+            }, params, {
+                upsert: true,
+                new: true,
+                overwrite: true
+                }, function (err, model) {
+                if(err){
+                    console.log(err);
+                }
+                // process.exit(0);
+            });
+
+            // user = userModel();
+            // user.save();
+        }).catch(err => console.log);
 
     }
-}
-exports.user = (req, res, next) => {
-    parseData();
-}
-
+})();
