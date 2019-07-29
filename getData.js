@@ -1,4 +1,3 @@
-require("request/package.json");
 var rp = require('request-promise');
 let queryString = require('query-string');
 const axios = require('axios');
@@ -31,7 +30,10 @@ function getUser(i,url) {
       return response;
   }
 (async function parseData() {
-    for (i = 0; i <= 10; i++) {
+    var start = 5000;
+    var end = start + 1000;
+    var total = 100000;
+    for (i = start; i <= end; i++) {
         query = {
             id: i,
         };
@@ -86,7 +88,20 @@ function getUser(i,url) {
 
             // user = userModel();
             // user.save();
-        }).catch(err => console.log);
+        }).catch(err => {
+            // console.log(err);
+        });
 
+        if(i == end){
+            start+= 1000;
+            end = start + 1000;
+        }
+        if(end == total){
+            console.log(end);
+            console.log(total);
+            console.log("END GAME");
+            process.exit(0);
+        }
     }
+    console.log("END GAME");
 })();
