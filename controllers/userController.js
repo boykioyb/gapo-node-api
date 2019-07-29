@@ -1,6 +1,6 @@
 var rp = require('request-promise');
 let queryString = require('query-string');
-
+const axios = require('axios');
 var userModel = require('../models/userModel');
 
 let base = "https://api.gapo.vn/";
@@ -11,12 +11,21 @@ async function insert(options) {
     return response;
 
 }
+async function getUser(i,url) {
+    try {
+      const response = await axios.get(url);
+      console.log("i trong then : " + i);
+      console.log("id : " + response.data.id);
+    } catch (error) {
+    //   console.error(error);
+    }
+  }
 function parseData() {
-    for (i = 150002; i <= 180000; i++) {
+    for (i = 0; i <= 10; i++) {
         query = {
             id: i,
         };
-
+         url  = base + path + queryString.stringify(query);
         var options = {
             url: base + path + queryString.stringify(query),
             method: 'GET',
@@ -28,76 +37,44 @@ function parseData() {
             }
 
         };
-        const ins = insert(options).then((htmlString) => {
-            data = htmlString.body;
-            if (data) {
-                console.log(base + path + queryString.stringify(query));
-                console.log(data.id);
-                // userModel.findOne({ id_user: data.id }, (err, doc) => {
-                //     let user;
-                //     if (err) {
-                //         doc.id_user = data.id;
-                //         doc.id_chat = data.id_chat;
-                //         doc.username = data.username;
-                //         doc.display_name = data.display_name;
-                //         doc.avatar = data.avatar;
-                //         doc.cover = data.cover;
-                //         doc.gender = data.gender;
-                //         doc.birthday = data.birthday;
-                //         doc.location = data.location;
-                //         doc.counts = data.counts;
-                //         doc.status = data.status;
-                //         doc.create_time = data.create_time;
-                //         doc.relation = data.relation;
-                //         doc.status_verify = data.status_verify;
-                //         doc.data_source = data.data_source;
-                //         doc.save();
-                //     } else {
-                //         user = new userModel({
-                //             id_user: data.id,
-                //             id_chat: data.id_chat,
-                //             username: data.username,
-                //             display_name: data.display_name,
-                //             avatar: data.avatar,
-                //             cover: data.cover,
-                //             gender: data.gender,
-                //             birthday: data.birthday,
-                //             location: data.location,
-                //             counts: data.counts,
-                //             status: data.status,
-                //             create_time: data.create_time,
-                //             relation: data.relation,
-                //             status_verify: data.status_verify,
-                //             data_source: data.data_source
-                //         });
-                //         user.save();
-                //     }
+        console.log("i : " + i);
+        getUser(i,url);
+        // axios.get(url).then(function (response) {
+        //     // handle success
+        //     console.log(response.data.id);
+        //   })
+        //   .catch(function (error) {
+        //     // handle error
+        //     // console.log(error);
+        //   })
+        //   .finally(function () {
+            // always executed
+        //   });
+            // data = htmlString.body;
+            // if (data) {
+            //     console.log(base + path + queryString.stringify(query));
+            //     console.log(data.id);
 
-                // });
+            //     user = new userModel({
+            //         id_user: data.id,
+            //         id_chat: data.id_chat,
+            //         username: data.username,
+            //         display_name: data.display_name,
+            //         avatar: data.avatar,
+            //         cover: data.cover,
+            //         gender: data.gender,
+            //         birthday: data.birthday,
+            //         location: data.location,
+            //         counts: data.counts,
+            //         status: data.status,
+            //         create_time: data.create_time,
+            //         relation: data.relation,
+            //         status_verify: data.status_verify,
+            //         data_source: data.data_source
+            //     });
+            //     user.save();
+            // }
 
-                user = new userModel({
-                    id_user: data.id,
-                    id_chat: data.id_chat,
-                    username: data.username,
-                    display_name: data.display_name,
-                    avatar: data.avatar,
-                    cover: data.cover,
-                    gender: data.gender,
-                    birthday: data.birthday,
-                    location: data.location,
-                    counts: data.counts,
-                    status: data.status,
-                    create_time: data.create_time,
-                    relation: data.relation,
-                    status_verify: data.status_verify,
-                    data_source: data.data_source
-                });
-                user.save();
-            }
-
-        }).catch(err => {
-            // console.log(i);
-        });
     }
 }
 exports.user = (req, res, next) => {
