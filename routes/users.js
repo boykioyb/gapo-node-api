@@ -4,4 +4,5 @@ var userController = require('../controllers/userController');
 /* GET users listing. */
 router.get('/', userController.userAll);
 
+
 module.exports = router;

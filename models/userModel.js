@@ -29,6 +29,6 @@ module.exports.get = function (callback,page, limit) {
     SomeModel.find(callback).skip(page*limit).limit(limit);
 }
 
-module.exports.count = function (callback) {
+module.exports.total = (callback) => {
     SomeModel.countDocuments(callback);
 }

@@ -3,7 +3,7 @@ let queryString = require('query-string');
 const axios = require('axios');
 
 const mongoose = require('mongoose');
-let dev_db_url = 'mongodb://127.0.0.1/test';
+let dev_db_url = 'mongodb://127.0.0.1:27017/test';
 let mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
@@ -30,7 +30,7 @@ function getUser(i,url) {
       return response;
   }
 (async function parseData() {
-    var start = 5000;
+    var start = 6000;
     var end = start + 1000;
     var total = 100000;
     for (i = start; i <= end; i++) {
@@ -51,10 +51,10 @@ function getUser(i,url) {
         };
         console.log("i : " + i);
         await getUser(i,url).then(response => {
-            console.log("i trong then : " + i);
-           
+          
             data = response.data;
-            
+            console.log("id:" + data.id);
+           
             params = {
                 id_user: data.id,
                 id_chat: data.id_chat,
@@ -83,6 +83,7 @@ function getUser(i,url) {
                 if(err){
                     console.log(err);
                 }
+                console.log(model);
                 // process.exit(0);
             });
 
