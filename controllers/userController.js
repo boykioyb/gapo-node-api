@@ -4,20 +4,20 @@ var userModel = require('../models/userModel');
 var total;
 
 async function userAll(req, res, next) {
-  
+
     let page = req.query.page ? parseInt(req.query.page) : 1;
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
-    console.log(req);
-   await new Promise((resolve,reject) => {
-        userModel.total((err,c) => {
-            if(err) return reject(err);
+    let keyword = req.query.keyword ? req.query.keyword : null;
+    await new Promise((resolve, reject) => {
+        userModel.total(keyword,(err, c) => {
+            if (err) return reject(err);
 
             resolve(c);
         });
-   }).then(response => {
-       total = response;
-       return total;
-   });
+    }).then(response => {
+        total = response;
+        return total;
+    });
 
     // console.log(total);
 
@@ -31,7 +31,7 @@ async function userAll(req, res, next) {
         var format = [];
         result.forEach(element => {
             let tmp = {};
-            tmp.id_user =  element.id_user;
+            tmp.id_user = element.id_user;
             tmp.id_chat = element.id_chat;
             tmp.display_name = element.display_name;
             tmp.avatar = element.avatar;
@@ -48,10 +48,10 @@ async function userAll(req, res, next) {
             message: "success",
             page: page,
             items: limit,
-            total : total - (page*limit),
+            total: total - (page * limit) < 0 ? 0 : total - (page * limit),
             data: format
         });
-        
-    },page-1,limit);
+
+    },keyword, page - 1, limit);
 }
 exports.userAll = userAll;
