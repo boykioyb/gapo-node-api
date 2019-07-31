@@ -30,7 +30,7 @@ function getUser(i,url) {
       return response;
   }
 (async function parseData() {
-    var start = 6000;
+    var start = 23375;
     var end = start + 1000;
     var total = 100000;
     for (i = start; i <= end; i++) {

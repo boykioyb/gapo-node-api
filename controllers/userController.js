@@ -7,7 +7,7 @@ async function userAll(req, res, next) {
   
     let page = req.query.page ? parseInt(req.query.page) : 1;
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
-
+    console.log(req);
    await new Promise((resolve,reject) => {
         userModel.total((err,c) => {
             if(err) return reject(err);
@@ -19,7 +19,7 @@ async function userAll(req, res, next) {
        return total;
    });
 
-    console.log(total);
+    // console.log(total);
 
     userModel.get(function (err, result) {
         if (err) {
