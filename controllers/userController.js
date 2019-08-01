@@ -6,10 +6,43 @@ var total;
 async function userAll(req, res, next) {
 
     let page = req.query.page ? parseInt(req.query.page) : 1;
-    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 20;
     let keyword = req.query.keyword ? req.query.keyword : null;
+    let know = req.query.know ? req.query.know : null;
+    let gender = req.query.keyword ? req.query.gender : null;
+    // console.log(req);
+
+    let myArray = [];
+    if (keyword != null) {
+        tmp = {
+            "display_name": new RegExp(
+                "^" + keyword + ".*",
+                "i"
+            )
+        };
+        myArray.push(tmp);
+    }
+    if (know != null) {
+        if(know == 1){
+            tmp = {
+                "display_name": { $ne: "" } 
+            };
+        }else{
+            tmp = {
+                "display_name": ""
+            };
+        }
+        myArray.push(tmp);
+    }
+    console.log(myArray);
+    var condition = myArray.reduce(function(map, obj) {
+        map[obj.id] = obj.car;
+        return map;
+    }, {});
+
+   console.log(condition)
     await new Promise((resolve, reject) => {
-        userModel.total(keyword,(err, c) => {
+        userModel.total(condition,(err, c) => {
             if (err) return reject(err);
 
             resolve(c);
@@ -52,6 +85,6 @@ async function userAll(req, res, next) {
             data: format
         });
 
-    },keyword, page - 1, limit);
+    },condition, page - 1, limit);
 }
 exports.userAll = userAll;

@@ -25,29 +25,12 @@ var SomeModel = mongoose.model('User', SomeModelSchema);
 
 module.exports = SomeModel;
 
-module.exports.get = function (callback, keyword, page, limit) {
-    let condition = {};
-    if (keyword != null) {
-        condition = {
-            "display_name": new RegExp(
-                "^" + keyword + ".*",
-                "i"
-            )
-        };
-    }
-    console.log(condition);
+module.exports.get = function (callback, condition = {}, page, limit) {
+   
     SomeModel.find(condition, callback).skip(page * limit).limit(limit);
 }
 
-module.exports.total = (keyword, callback) => {
-    let condition = {};
-    if (keyword != null) {
-        condition = {
-            "display_name": new RegExp(
-                "^" + keyword + ".*",
-                "i"
-            )
-        };
-    }
+module.exports.total = (condition = {}, callback) => {
+  
     SomeModel.countDocuments(condition, callback);
 }
