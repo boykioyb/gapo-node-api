@@ -12,7 +12,7 @@ async function userAll(req, res, next) {
     let gender = req.query.keyword ? req.query.gender : null;
     // console.log(req);
 
-    let myArray = [];
+    let condition = {};
     if (keyword != null) {
         tmp = {
             "display_name": new RegExp(
@@ -20,29 +20,34 @@ async function userAll(req, res, next) {
                 "i"
             )
         };
-        myArray.push(tmp);
+        condition = {
+            $and: []
+        };
+        condition.$and.push(tmp);
     }
     if (know != null) {
-        if(know == 1){
-            tmp = {
-                "display_name": { $ne: "" } 
+        if (condition.$and == null) {
+            condition = {
+                $and: []
             };
-        }else{
+        }
+        if (know == 1) {
+            tmp = {
+                "display_name": { $ne: "" }
+            };
+        } else {
             tmp = {
                 "display_name": ""
             };
         }
-        myArray.push(tmp);
+        condition.$and.push(tmp)
     }
-    console.log(myArray);
-    var condition = myArray.reduce(function(map, obj) {
-        map[obj.id] = obj.car;
-        return map;
-    }, {});
-
-   console.log(condition)
+    if(gender != null){
+        // condition
+    }
+    console.log(condition)
     await new Promise((resolve, reject) => {
-        userModel.total(condition,(err, c) => {
+        userModel.total(condition, (err, c) => {
             if (err) return reject(err);
 
             resolve(c);
@@ -85,6 +90,6 @@ async function userAll(req, res, next) {
             data: format
         });
 
-    },condition, page - 1, limit);
+    }, condition, page - 1, limit);
 }
 exports.userAll = userAll;
